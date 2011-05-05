@@ -1,0 +1,24 @@
+-classpath
+'C:/tools/hudson/jobs/encog-core-mainline/workspace/target/classes'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'C:/tools/hudson/jobs/encog-core-mainline/workspace/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2011. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'C:/tools/hudson/jobs/encog-core-mainline/workspace/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Encog Core 3.0.0-SNAPSHOT API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'Encog Core 3.0.0-SNAPSHOT API'
