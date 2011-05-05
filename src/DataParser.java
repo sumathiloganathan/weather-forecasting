@@ -18,17 +18,17 @@ public class DataParser {
 		WIND_DIRECTION = 2, TEMPERATURE = 3,
 		RAIN = 4, HUMIDITY = 5;
 		
-	private static int[] VALUES_INDEXES = {28,14,11,38,28,45};//unless this is different between files we can have a static value
+	private static int[] VALUES_INDEXES = {28,14,11,38,30,45};//unless this is different between files we can have a static value
 	
 	/*
 	DATUM 
 	TE time 
-	DPS air pressure
-	DFF wind speed
-	DDD wind direction
-	DTT temperature
-	DRR rain
-	UU humidity
+	DPS air pressure 28
+	DFF wind speed 14
+	DDD wind direction 11
+	DTT temperature 38
+	DRR rain 30
+	UU humidity 45
 	*/
 	
 	public static final String[] NAMES = {"air pressure","wind speed","wind direction","temperature","rain","humidity"};

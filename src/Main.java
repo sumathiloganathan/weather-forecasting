@@ -9,11 +9,14 @@ public class Main {
 		DataParser dp = new DataParser();
 		dp.parse("SMHI_3hours_clim_7142.txt", true);
 		System.out.println("number of entries:"+dp.size());
-		System.out.print("entry number:2 date:"+dp.getDate(2)+ " time:"+dp.getTime(2));
-		double[] data = dp.getData(2);
-		for (int i=0; i<data.length; i++){
-			System.out.print(" "+DataParser.NAMES[i]+":"+data[i]);
+		for (int j=0; j < 10; j++){
+			System.out.print("entry number:"+j+" date:"+dp.getDate(j)+ " time:"+dp.getTime(j));
+			double[] data = dp.getData(j);
+			for (int i=0; i<data.length; i++){
+				System.out.print(" "+DataParser.NAMES[i]+":"+data[i]);
+			}
+			System.out.println();
 		}
-		System.out.println();
+		
 	}
 }
