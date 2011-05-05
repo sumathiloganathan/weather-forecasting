@@ -7,7 +7,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException{
 		DataParser dp = new DataParser();
-		dp.parse("SMHI_3hours_clim_7142.txt", false);
+		dp.parse("SMHI_3hours_clim_7142.txt", true);
 		System.out.println("number of entries:"+dp.size());
 		System.out.print("entry number:2 date:"+dp.getDate(2)+ " time:"+dp.getTime(2));
 		double[] data = dp.getData(2);
