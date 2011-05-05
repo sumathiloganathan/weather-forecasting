@@ -59,19 +59,35 @@ public class DataParser {
 		try{
 			s = new BufferedReader(new FileReader(f));
 			
+			double[] post = new double[VALUES_INDEXES.length];
 			//loop all lines in the file
 			while ((line=s.readLine())!=null){
 				
-				double[] post = new double[VALUES_INDEXES.length];
+				//post = new double[VALUES_INDEXES.length];
 				String[] values = line.trim().split("\\s+");
 				
-				datesList.add(values[0]);
-				timesList.add(values[1]);
+				boolean good = true;
 				
 				for (int i=0 ; i<VALUES_INDEXES.length ; i++){
-					post[i] = Double.parseDouble(values[VALUES_INDEXES[i]]);
+					double v = Double.parseDouble(values[VALUES_INDEXES[i]]);
+					if (skipBadData && (v==MISSING_VALUE || v==ERROR_VALUE)){
+						good = false;
+						break;
+					}
+					else{
+						post[i] = v;
+					}
 				}
-				dataList.add(post);
+				
+				if (good){
+					datesList.add(values[0]);
+					timesList.add(values[1]);
+					dataList.add(post);
+					post = new double[VALUES_INDEXES.length];
+				}
+				else{
+					
+				}
 			}
 		}
 		finally{
