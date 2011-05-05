@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Program Files/eclipse/libraries for ai/jFuzzyLogic_2.0.10.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/eclipse/libraries for ai/encog-core-3.0.0-beta1/encog-core-3.0.0-SNAPSHOT/lib/encog-core-3.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="jFuzzyLogic_2.0.10.jar"/>
+	<classpathentry kind="lib" path="encog-core-3.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
