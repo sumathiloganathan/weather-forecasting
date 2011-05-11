@@ -2,8 +2,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+
+import org.encog.ml.data.MLDataPair;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataPair;
 
 
 public class DataParser {
@@ -44,7 +50,7 @@ public class DataParser {
 	/**
 	 * Tries to parse a data file and stores the result in this data parser where it later can be accessed.
 	 * @param file The file from SMHI to parse.
-	 * @param skipBadData does nothing yet...
+	 * @param skipBadData Skips data entries where at least one element is either missing or wrong.
 	 * @throws IOException If there is something wrong.
 	 */
 	public void parse(String file, boolean skipBadData) throws IOException{
@@ -63,7 +69,6 @@ public class DataParser {
 			//loop all lines in the file
 			while ((line=s.readLine())!=null){
 				
-				//post = new double[VALUES_INDEXES.length];
 				String[] values = line.trim().split("\\s+");
 				
 				boolean good = true;
@@ -132,5 +137,22 @@ public class DataParser {
 	
 	public int getTime(int i){
 		return times[i];
+	}
+	
+	/**
+	 * Simply returns the data as training data where the input will be one element and the 
+	 * ideal output will be the rain variable in the next data element.
+	 * @return
+	 */
+	public List<MLDataPair> asVerySimpleTrainingData(){
+		//LinkedList<MLDataPair> retList = new LinkedList<MLDataPair>();
+		ArrayList<MLDataPair> retList = new ArrayList<MLDataPair>(data.length-1);
+		
+		for (int i=1; i<data.length; i++){
+			//if input is data point i the ideal output should be RAIN in data point i+1
+			retList.add(new BasicMLDataPair(new BasicMLData(data[i-1]), new BasicMLData(new double[]{data[i][RAIN]})));
+		}
+		
+		return retList;
 	}
 }
