@@ -24,7 +24,7 @@ public class EncogExample {
 
 	public static double XOR_IDEAL[][] = { { 0.0 }, { 1.0 }, { 1.0 }, { 0.0 } };
 
-	public static void main(final String args[]) {
+	public static void run() {
 
 		Logging.stopConsoleLogging();
 
@@ -42,13 +42,22 @@ public class EncogExample {
 		final Train train = new ResilientPropagation(network, trainingSet);
 
 		int epoch = 1;
-
+		double lastError = Double.MAX_VALUE;
+		
 		do {
 			train.iteration();
-			//System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+			System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 			epoch++;
+			
+			if (lastError-train.getError() < 0.00000000001){
+				break;
+			}
+			lastError = train.getError();
+			
 		} while (train.getError() > 0.01);
-
+		
+		System.out.println("times trained:"+epoch);
+		
 		// test the neural network
 		System.out.println("Neural Network Results:");
 		for (final MLDataPair pair : trainingSet) {
