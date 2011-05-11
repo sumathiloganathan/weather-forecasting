@@ -5,7 +5,7 @@ import net.sourceforge.jFuzzyLogic.FIS;
  * @author pcingola@users.sourceforge.net
  */
 public class FuzzyExample {
-    public static void main(String[] args) throws Exception {
+    public static void run() throws Exception {
         // Load from 'FCL' file
         String fileName = "fcl/tipper.fcl";
         FIS fis = FIS.load(fileName,true);

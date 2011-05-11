@@ -23,7 +23,7 @@ public class DataParser {
 		AIR_PRESSURE = 0, WIND_SPEED = 1,
 		WIND_DIRECTION = 2, TEMPERATURE = 3,
 		RAIN = 4, HUMIDITY = 5;
-		
+	
 	private static int[] VALUES_INDEXES = {28,14,11,38,30,45};//unless this is different between files we can have a static value
 	
 	/*
@@ -73,6 +73,7 @@ public class DataParser {
 				
 				boolean good = true;
 				
+				//obtain data elements we are interested in
 				for (int i=0 ; i<VALUES_INDEXES.length ; i++){
 					double v = Double.parseDouble(values[VALUES_INDEXES[i]]);
 					if (skipBadData && (v==MISSING_VALUE || v==ERROR_VALUE)){
@@ -80,8 +81,17 @@ public class DataParser {
 						break;
 					}
 					else{
-						post[i] = v;
+						if (i == RAIN && v < 0.0){
+							post[i] = 0.0;
+						}
+						else{
+							post[i] = v;
+						}
 					}
+				}
+				
+				if (post[WIND_DIRECTION]==0.0){//if this is 0 there is no wind, make direction random
+					post[WIND_DIRECTION] = Math.random()*360;
 				}
 				
 				if (good){
@@ -90,9 +100,9 @@ public class DataParser {
 					dataList.add(post);
 					post = new double[VALUES_INDEXES.length];
 				}
-				else{
-					
-				}
+				/*else{
+					bad data... skip
+				}*/
 			}
 		}
 		finally{
@@ -139,18 +149,24 @@ public class DataParser {
 		return times[i];
 	}
 	
+	public double[][] getRawData(){
+		return data;
+	}
+	
 	/**
 	 * Simply returns the data as training data where the input will be one element and the 
 	 * ideal output will be the rain variable in the next data element.
 	 * @return
 	 */
-	public List<MLDataPair> asVerySimpleTrainingData(){
+	public List<MLDataPair> asVerySimpleTrainingData(DataAdjuster da){
 		//LinkedList<MLDataPair> retList = new LinkedList<MLDataPair>();
 		ArrayList<MLDataPair> retList = new ArrayList<MLDataPair>(data.length-1);
 		
 		for (int i=1; i<data.length; i++){
 			//if input is data point i the ideal output should be RAIN in data point i+1
-			retList.add(new BasicMLDataPair(new BasicMLData(data[i-1]), new BasicMLData(new double[]{data[i][RAIN]})));
+			retList.add(new BasicMLDataPair(
+					new BasicMLData(da.adjustInput(data[i-1])),
+					new BasicMLData(new double[]{da.adjustOutput(data[i][RAIN])})));
 		}
 		
 		return retList;

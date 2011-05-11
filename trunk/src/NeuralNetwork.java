@@ -1,3 +1,4 @@
+import org.encog.engine.network.activation.ActivationGaussian;
 import org.encog.ml.BasicML;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.train.MLTrain;
@@ -8,36 +9,53 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 
 public class NeuralNetwork {
 	
-	private final BasicNetwork network = new BasicNetwork();
+	public final BasicNetwork network = new BasicNetwork();
 	
-	public NeuralNetwork(){
+	/**
+	 * Construct a new neural network with the given inputs, outputs and hidden layers
+	 * @param inputs
+	 * @param outputs
+	 * @param hidden
+	 */
+	public NeuralNetwork(int inputs, int outputs, int[] hidden){
+		
+		//ActivationGaussian activation = new ActivationGaussian(1.0, 1.0, 2.0);
+		
 		//first layer contains the number of inputs from the data parser
 		//will have to change if we use input in some other form than raw data from the parser
-		network.addLayer(new BasicLayer(DataParser.NAMES.length));
+		network.addLayer(new BasicLayer(inputs));
 		
-		//hidden layers
-		network.addLayer(new BasicLayer(DataParser.NAMES.length));
+		for (int i : hidden){
+			network.addLayer(new BasicLayer(i));
+		}
 		
 		//final layer contains just one output
 		//could possible contain same as input layer if we want to apply fuzzy logic to the output
-		network.addLayer(new BasicLayer(1));
+		network.addLayer(new BasicLayer(outputs));
 		
 		network.getStructure().finalizeStructure();
 		network.reset();
 	}
 	
-	public void train(MLDataSet data){
+	/**
+	 * Trains the network with the given data and given number of times.
+	 * @param data The data to train with.
+	 * @param times The number of times to train.
+	 * @return The resulting error after training.
+	 */
+	public double train(MLDataSet data, int times){
 		final MLTrain train = new ResilientPropagation(network, data);
 		
-		for (int i=0; i<7000; i++){
+		
+		/*for (int i=0; i<3000; i++){
 			train.iteration();
 			//System.out.println(""+i+": "+train.getError());
-		}
-		for (int i=7001; i<7100; i++){
+		}*/
+		for (int i=0; i<times; i++){
 			train.iteration();
 			System.out.println(""+i+": "+train.getError());
 		}
-		
+		return train.getError();
 	}
 	
 	private final double[] tmpOut = new double[1];
