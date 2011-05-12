@@ -13,6 +13,22 @@ import org.encog.ml.data.basic.BasicMLDataPair;
 
 
 public class DataParser {
+	/*
+	public class DataPoint{
+		public final int date;
+		public final int time;
+		private final double[] data;
+		
+		public DataPoint(int date, int time, double[] data){
+			this.data = data;
+			this.date = date;
+			this.time = time;
+		}
+		
+		public double getData(int i){
+			return data[i];
+		}
+	}*/
 	
 	public static final double MISSING_VALUE = -999.0, ERROR_VALUE = -998.0;
 	
@@ -90,11 +106,14 @@ public class DataParser {
 					}
 				}
 				
-				if (post[WIND_DIRECTION]==0.0){//if this is 0 there is no wind, make direction random
-					post[WIND_DIRECTION] = Math.random()*360;
-				}
-				
 				if (good){
+					
+					if (post[WIND_DIRECTION]==0.0){//if this is 0 there is no wind, make direction random
+						//post[WIND_DIRECTION] = Math.random()*360;
+						post[WIND_DIRECTION] = dataList.getLast()[WIND_DIRECTION];
+						
+					}
+					
 					datesList.add(values[0]);
 					timesList.add(values[1]);
 					dataList.add(post);

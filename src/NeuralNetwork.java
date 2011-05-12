@@ -51,9 +51,16 @@ public class NeuralNetwork {
 			train.iteration();
 			//System.out.println(""+i+": "+train.getError());
 		}*/
+		double lastError = Double.MAX_VALUE;
+		
 		for (int i=0; i<times; i++){
 			train.iteration();
-			System.out.println(""+i+": "+train.getError());
+			//System.out.println(""+i+": "+train.getError());
+			if (lastError-train.getError()<0.00000000001){
+				System.out.println("\tstopped after:"+i+" ");
+				return train.getError();
+			}
+			lastError = train.getError();
 		}
 		return train.getError();
 	}
