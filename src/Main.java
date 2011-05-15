@@ -55,6 +55,29 @@ public class Main {
 		
 		//NeuralNetwork nn = new NeuralNetwork(DataParser.NAMES.length+1, 1, new int[]{4,3});
 		//System.out.println(nn.train(trainData, 40));
+		
+		
+		
+		// This would create a new WeatherData and print some nice information about it
+		/*
+		WeatherData wd = DataParser.parse("SMHI_3hours_clim_7142.txt");
+		System.out.println(wd.info());
+		System.out.println();
+		System.out.print(wd.getDataWith(new WeatherData.Value[]{
+				WeatherData.Value.WIND_SPEED,
+				WeatherData.Value.WIND_DIRECTION,
+				WeatherData.Value.TEMPERATURE,
+				WeatherData.Value.HUMIDITY}).size());
+		System.out.println("\twind speed/direction, temp, humidity");
+		
+		System.out.print(wd.getDataWith(new WeatherData.Value[]{
+				WeatherData.Value.WIND_SPEED,
+				WeatherData.Value.WIND_DIRECTION,
+				WeatherData.Value.TEMPERATURE,
+				WeatherData.Value.HUMIDITY,
+				WeatherData.Value.RAIN}).size());
+		System.out.println("\twind speed/direction, temp, humidity, rain");
+		 */
 	}
 	
 	/**
