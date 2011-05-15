@@ -13,22 +13,6 @@ import org.encog.ml.data.basic.BasicMLDataPair;
 
 
 public class DataParser {
-	/*
-	public class DataPoint{
-		public final int date;
-		public final int time;
-		private final double[] data;
-		
-		public DataPoint(int date, int time, double[] data){
-			this.data = data;
-			this.date = date;
-			this.time = time;
-		}
-		
-		public double getData(int i){
-			return data[i];
-		}
-	}*/
 	
 	public static final double MISSING_VALUE = -999.0, ERROR_VALUE = -998.0;
 	
@@ -62,6 +46,27 @@ public class DataParser {
 	private double[][] data = new double[0][0];
 	private int[] times;
 	private int[] dates;
+	
+	public static WeatherData parse(String file) throws IOException{
+		File f = new File(file);
+		BufferedReader s = null;
+		String line = null;
+		LinkedList<DataPoint> data = new LinkedList<DataPoint>();
+		
+		try{
+			s = new BufferedReader(new FileReader(f));
+			
+			while ((line=s.readLine())!=null){
+				data.add(new DataPoint(line));
+			}
+		}
+		finally{
+			if(s!=null)
+				s.close();
+		}
+		
+		return new WeatherData(data);
+	}
 	
 	/**
 	 * Tries to parse a data file and stores the result in this data parser where it later can be accessed.
