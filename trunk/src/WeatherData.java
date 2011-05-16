@@ -27,8 +27,8 @@ public class WeatherData {
 		temperatureData = new HashSet<DataPoint>(73500,1.0f),
 		humidityData = new HashSet<DataPoint>(73000,1.0f);
 	
-	private boolean addIfValid(Set<DataPoint> set, DataPoint dp, float value){
-		if (DataPoint.isValid(value)){
+	private boolean addIfValid(Set<DataPoint> set, DataPoint dp, int value){
+		if (dp.isValid(value)){
 			set.add(dp);
 			return true;
 		}
@@ -46,12 +46,12 @@ public class WeatherData {
 		while (it.hasNext()){
 			DataPoint dp = it.next();
 			
-			boolean valid = addIfValid(rainData, dp, dp.rain);
-			valid = addIfValid(airPressureData, dp, dp.air_pressure) || valid;
-			valid = addIfValid(windDirectionData, dp, dp.wind_direction) || valid;
-			valid = addIfValid(windSpeedData, dp, dp.wind_speed) || valid;
-			valid = addIfValid(humidityData, dp, dp.humidity) || valid;
-			valid = addIfValid(temperatureData, dp, dp.temperature) || valid;
+			boolean valid = addIfValid(rainData, dp, DataPoint.RAIN);
+			valid = addIfValid(airPressureData, dp, DataPoint.AIR_PRESSURE) || valid;
+			valid = addIfValid(windDirectionData, dp, DataPoint.WIND_DIRECTION) || valid;
+			valid = addIfValid(windSpeedData, dp, DataPoint.WIND_SPEED) || valid;
+			valid = addIfValid(humidityData, dp, DataPoint.HUMIDITY) || valid;
+			valid = addIfValid(temperatureData, dp, DataPoint.TEMPERATURE) || valid;
 			
 			//not added to any data set, no point in keeping it
 			if (!valid)
