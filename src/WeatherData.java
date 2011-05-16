@@ -45,12 +45,12 @@ public class WeatherData {
 		while (it.hasNext()){
 			DataPoint dp = it.next();
 			
-			boolean valid = 
-				addIfValid(rainData, dp, dp.rain) ||
-				addIfValid(airPressureData, dp, dp.air_pressure) ||
-				addIfValid(windDirectionData, dp ,dp.wind_direction) ||
-				addIfValid(windSpeedData, dp, dp.wind_speed) ||
-				addIfValid(humidityData, dp, dp.humidity);
+			boolean valid = addIfValid(rainData, dp, dp.rain);
+			valid = addIfValid(airPressureData, dp, dp.air_pressure) || valid;
+			valid = addIfValid(windDirectionData, dp, dp.wind_direction) || valid;
+			valid = addIfValid(windSpeedData, dp, dp.wind_speed) || valid;
+			valid = addIfValid(humidityData, dp, dp.humidity) || valid;
+			valid = addIfValid(temperatureData, dp, dp.temperature) || valid;
 			
 			//not added to any data set, no point in keeping it
 			if (!valid)
