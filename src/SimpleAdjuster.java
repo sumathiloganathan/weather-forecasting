@@ -20,6 +20,10 @@ public class SimpleAdjuster implements DataAdjuster{
 	private final double[] min = new double[4];
 	private final double[] max = new double[4];
 	
+	private double min(DataPoint dp, int thisIndex, int thatIndex){
+		return dp.isValid(thatIndex) ? Math.min(dp.get(thatIndex), min[thisIndex]) : min[thisIndex];
+	}
+	
 	public SimpleAdjuster(Set<DataPoint> data){
 		for (int i=0; i<min.length; i++){
 			min[i] = Double.POSITIVE_INFINITY;
@@ -27,17 +31,17 @@ public class SimpleAdjuster implements DataAdjuster{
 		}
 		
 		for (DataPoint dp : data){
-			min[HUMI] = Math.min(min[HUMI], dp.get(DataPoint.HUMIDITY));
+			min[HUMI] = min(dp, HUMI, (DataPoint.HUMIDITY));
 			max[HUMI] = Math.max(max[HUMI], dp.get(DataPoint.HUMIDITY));
 			
-			min[WIND] = Math.min(min[WIND], dp.get(DataPoint.WIND_SPEED));
+			min[WIND] = min(dp, WIND, (DataPoint.WIND_SPEED));
 			max[WIND] = Math.max(max[WIND], dp.get(DataPoint.WIND_SPEED));
 			
-			min[TEMP] = Math.min(min[TEMP], dp.get(DataPoint.TEMPERATURE));
+			min[TEMP] = min(dp, TEMP, (DataPoint.TEMPERATURE));
 			max[TEMP] = Math.max(max[TEMP], dp.get(DataPoint.TEMPERATURE));
 			
-			min[RAIN] = Math.min(min[TEMP], dp.get(DataPoint.RAIN));
-			max[RAIN] = Math.max(max[TEMP], dp.get(DataPoint.RAIN));
+			min[RAIN] = min(dp, RAIN, (DataPoint.RAIN));
+			max[RAIN] = Math.max(max[RAIN], dp.get(DataPoint.RAIN));
 		}
 	}
 	
@@ -56,7 +60,7 @@ public class SimpleAdjuster implements DataAdjuster{
 	
 	
 	private MLDataPair makePair(DataPoint curr, DataPoint next){
-		if (next.getTime()-curr.getTime() < 21600001){//6 hours in milliseconds 6*60*60*1000
+		if (next.isValid(DataPoint.RAIN) && (next.getTime()-curr.getTime()) < 21600001){//6 hours in milliseconds 6*60*60*1000
 			return new BasicMLDataPair(new BasicMLData(asInput(curr)),new BasicMLData(new double[]{asOutput(next)}));
 		}
 		return null;
