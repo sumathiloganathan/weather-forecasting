@@ -46,21 +46,18 @@ public class NeuralNetwork {
 	public double train(MLDataSet data, int times){
 		final MLTrain train = new ResilientPropagation(network, data);
 		
-		
-		/*for (int i=0; i<3000; i++){
+		int print = 0;
+		for (int i=0; i<times; i++, print++){
 			train.iteration();
 			//System.out.println(""+i+": "+train.getError());
-		}*/
-		double lastError = Double.MAX_VALUE;
-		
-		for (int i=0; i<times; i++){
-			train.iteration();
-			//System.out.println(""+i+": "+train.getError());
-			if (lastError-train.getError()<0.00000000001){
+			/*if (train.getError() < 0.0001){
 				System.out.println("\tstopped after:"+i+" ");
 				return train.getError();
+			}*/
+			if (print >= 100){
+				System.out.print(".");
+				print = 0;
 			}
-			lastError = train.getError();
 		}
 		return train.getError();
 	}
