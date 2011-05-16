@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.SortedSet;
 
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
@@ -10,9 +12,9 @@ public class Main {
 	public static void main(String[] args) throws IOException{
 		//EncogExample.run();
 		
-		DataParser dp = new DataParser();
-		dp.parse("SMHI_3hours_clim_7142.txt", true);
-		System.out.println("number of entries:"+dp.size());
+		//DataParser dp = new DataParser();
+		//dp.parse("SMHI_3hours_clim_7142.txt", true);
+		//System.out.println("number of entries:"+dp.size());
 		/*for (int j=0; j < 10; j++){
 			System.out.print("entry number:"+j+" date:"+dp.getDate(j)+ " time:"+dp.getTime(j));
 			double[] data = dp.getData(j);
@@ -21,7 +23,7 @@ public class Main {
 			}
 			System.out.println();
 		}*/
-		
+		/*
 		System.out.println();
 		
 		//since we now use SimpleAdjuster we will get one extra input values since it splits the wind direction into two values
@@ -36,7 +38,7 @@ public class Main {
 				System.out.println("\t"+DataParser.NAMES[j]+" orig:"+orig[j]+" norm:"+norm[j]);
 			}
 			System.out.println();
-		}
+		}*/
 		
 		/*int[] layers = findGoodLayer(trainData);
 		
@@ -58,9 +60,11 @@ public class Main {
 		
 		
 		
-		// This would create a new WeatherData and print some nice information about it
-		/*
+		// This creates a new WeatherData and print some nice information about it
+		long start = System.currentTimeMillis();
 		WeatherData wd = DataParser.parse("SMHI_3hours_clim_7142.txt");
+		System.out.println("parsed in:"+(System.currentTimeMillis()-start));
+		
 		System.out.println(wd.info());
 		System.out.println();
 		System.out.print(wd.getDataWith(new WeatherData.Value[]{
@@ -76,8 +80,25 @@ public class Main {
 				WeatherData.Value.TEMPERATURE,
 				WeatherData.Value.HUMIDITY,
 				WeatherData.Value.RAIN}).size());
-		System.out.println("\twind speed/direction, temp, humidity, rain");
-		 */
+		System.out.println("\twind speed/direction, temp, humidity, rain\n");
+		
+		start = System.currentTimeMillis();
+		int months[] = new int[]{Calendar.JULY, Calendar.JUNE, Calendar.AUGUST, Calendar.MAY};
+		SortedSet<DataPoint> summer = wd.getDataFromMonths(months);
+		System.out.println("summer data: "+summer.size()+" obatined in:"+(System.currentTimeMillis()-start));
+		
+		start = System.currentTimeMillis();
+		SortedSet<DataPoint> summer2 = wd.getDataBetweenMonths(Calendar.MAY, Calendar.AUGUST);
+		System.out.println("summer data 2: "+summer2.size()+" obtained in:"+(System.currentTimeMillis()-start));
+		
+		start = System.currentTimeMillis();
+		wd.purgeData(summer2, new WeatherData.Value[]{
+				WeatherData.Value.WIND_SPEED,
+				WeatherData.Value.WIND_DIRECTION,
+				WeatherData.Value.TEMPERATURE,
+				WeatherData.Value.HUMIDITY});
+		
+		System.out.println("summer data 2 cleaned: "+summer2.size()+" obtained in:"+(System.currentTimeMillis()-start));
 	}
 	
 	/**

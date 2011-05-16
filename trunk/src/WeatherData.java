@@ -1,9 +1,10 @@
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -38,7 +39,7 @@ public class WeatherData {
 	 * Creates new weather data from the given data. Constructs a bunch of sets of different types of data.
 	 * @param data The weather data to create a structure for.
 	 */
-	public WeatherData(List<DataPoint> data){
+	public WeatherData(Collection<DataPoint> data){
 		allData = new TreeSet<DataPoint>(data);
 		Iterator<DataPoint> it = allData.iterator();
 		
@@ -80,8 +81,8 @@ public class WeatherData {
 	 * @param values
 	 * @return
 	 */
-	public Set<DataPoint> getDataWith(Value[] values){
-		Set<DataPoint> result = null;
+	public SortedSet<DataPoint> getDataWith(Value[] values){
+		SortedSet<DataPoint> result = null;
 		//sort them because it's faster to start with a small set
 		Arrays.sort(values, new Comparator<Value>(){
 				@Override
@@ -90,17 +91,80 @@ public class WeatherData {
 				}
 			});
 		
-		result = new HashSet<DataPoint>(getData(values[0]));
+		result = new TreeSet<DataPoint>(getData(values[0]));
 		
-		for (int i=0; i<values.length; i++){
+		for (int i=1; i<values.length; i++){
 			result.retainAll(getData(values[i]));
 		}
 		return result;
 	}
 	
-	//between two time
+	/**
+	 * Removes all values from orig that is missing valid data for at least one of the given values.
+	 * @param orig
+	 * @param values
+	 */
+	public void purgeData(SortedSet<DataPoint> orig, Value[] values){
+		//sort them because it's faster to start with a small set
+		Arrays.sort(values, new Comparator<Value>(){
+				@Override
+				public int compare(Value arg0, Value arg1) {
+					return getData(arg0).size()-getData(arg1).size();
+				}
+			});
+		
+		for (int i=0; i<values.length; i++){
+			orig.retainAll(getData(values[i]));
+		}
+	}
+	
+	//between two times
 	public SortedSet<DataPoint> getDataFromTo(DataPoint from, DataPoint to){
 		return allData.subSet(from, to);
+	}
+	
+	//faster version of month getting
+	public SortedSet<DataPoint> getDataBetweenMonths(int firstMonth, int lastMonth){
+		GregorianCalendar startDate, endDate;
+		
+		if (firstMonth > lastMonth){//think the constants are in order
+			//this means over new year
+			startDate = new GregorianCalendar(allData.first().getYear(), firstMonth, 0);
+			endDate = new GregorianCalendar(startDate.get(Calendar.YEAR)+1, lastMonth+1, 0);
+		}
+		else{
+			startDate = new GregorianCalendar(allData.first().getYear(), firstMonth, 0);
+			endDate = new GregorianCalendar(startDate.get(Calendar.YEAR), lastMonth+1, 0);	
+		}
+		
+		SortedSet<DataPoint> result = new TreeSet<DataPoint>();
+		
+		int lastYear = allData.last().getYear();
+		
+		while (endDate.get(Calendar.YEAR)<lastYear){
+			result.addAll(allData.subSet(new DataPoint(startDate), new DataPoint(endDate)));
+			
+			startDate.add(Calendar.YEAR, 1);
+			endDate.add(Calendar.YEAR, 1);
+		}
+		
+		return result;
+	}
+	
+	//slower version of month getting
+	public SortedSet<DataPoint> getDataFromMonths(int[] months){
+		SortedSet<DataPoint> result = new TreeSet<DataPoint>();
+		Iterator<DataPoint> it = allData.iterator();
+		while (it.hasNext()){
+			DataPoint dp = it.next();
+			for (int i=0; i<months.length; i++){
+				if (dp.getMonth()==months[i]){
+					result.add(dp);
+					break;
+				}
+			}
+		}
+		return result;
 	}
 	
 	public String info(){
