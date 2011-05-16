@@ -1,3 +1,4 @@
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
@@ -47,6 +48,30 @@ public class DataPoint implements Comparable<DataPoint>{
 		this.rain = rain==-1.0f ? 0.0f : rain;
 	}
 	
+	/**
+	 * Creates a dummy date point to get stuff from weather data.
+	 * @param date
+	 */
+	public DataPoint(GregorianCalendar date){
+		air_pressure = MISSING_VALUE;
+		wind_speed = MISSING_VALUE;
+		wind_direction = MISSING_VALUE;
+		temperature = MISSING_VALUE;
+		rain = MISSING_VALUE;
+		humidity = MISSING_VALUE;
+		
+		this.date = date;
+		hashCode = -1;
+	}
+	
+	public int getMonth(){
+		return date.get(Calendar.MONTH);
+	}
+	
+	public int getYear(){
+		return date.get(Calendar.YEAR);
+	}
+	
 	public int hashCode(){
 		return hashCode;
 	}
@@ -68,4 +93,8 @@ public class DataPoint implements Comparable<DataPoint>{
 		return value!=ERROR_VALUE && value!=MISSING_VALUE;
 	}
 	
+	public String toString(){
+		return "DataPoint["+date.get(Calendar.YEAR)+"/"+date.get(Calendar.MONTH)+"/"+date.get(Calendar.DAY_OF_MONTH)+
+			"/"+date.get(Calendar.HOUR_OF_DAY)+"]";
+	}
 }
