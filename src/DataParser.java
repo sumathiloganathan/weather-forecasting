@@ -70,6 +70,7 @@ public class DataParser {
 	
 	/**
 	 * Tries to parse a data file and stores the result in this data parser where it later can be accessed.
+	 * @deprecated Use static function instead.
 	 * @param file The file from SMHI to parse.
 	 * @param skipBadData Skips data entries where at least one element is either missing or wrong.
 	 * @throws IOException If there is something wrong.
@@ -124,9 +125,9 @@ public class DataParser {
 					dataList.add(post);
 					post = new double[VALUES_INDEXES.length];
 				}
-				/*else{
-					bad data... skip
-				}*/
+				//else{
+				//	bad data... skip
+				//}
 			}
 		}
 		finally{
@@ -149,6 +150,7 @@ public class DataParser {
 	
 	/**
 	 * Returns the number of data entries from the last parse.
+	 * @deprecated Use weather data instead.
 	 * @return The total number of data entries.
 	 */
 	public int size(){
@@ -158,6 +160,7 @@ public class DataParser {
 	/**
 	 * Gets a specific data entry. The returned data is in the form of an array where each element 
 	 * represents a type of weather data, to see what index is what data look at static ints in this class.
+	 * @deprecated Use weather data instead.
 	 * @param i The index for the data entry to get.
 	 * @return A data entry.
 	 */
@@ -165,14 +168,28 @@ public class DataParser {
 		return data[i];
 	}
 	
+	/**
+	 * @deprecated Use weather data instead.
+	 * @param i
+	 * @return
+	 */
 	public int getDate(int i){
 		return dates[i];
 	}
 	
+	/**
+	 * @deprecated Use weather data instead.
+	 * @param i
+	 * @return
+	 */
 	public int getTime(int i){
 		return times[i];
 	}
 	
+	/**
+	 * @deprecated Use weather data instead.
+	 * @return
+	 */
 	public double[][] getRawData(){
 		return data;
 	}
@@ -180,6 +197,7 @@ public class DataParser {
 	/**
 	 * Simply returns the data as training data where the input will be one element and the 
 	 * ideal output will be the rain variable in the next data element.
+	 * @deprecated Use weather data instead.
 	 * @return
 	 */
 	public List<MLDataPair> asVerySimpleTrainingData(DataAdjuster da){

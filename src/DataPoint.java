@@ -17,10 +17,9 @@ public class DataPoint implements Comparable<DataPoint>{
 	
 	private final int hashCode;
 	private final GregorianCalendar date;
-	/**
-	 * The different data values.
-	 */
-	public final float air_pressure, wind_speed, wind_direction, temperature, rain, humidity;
+	
+	public static final int RAIN = 0, AIR_PRESSURE = 1, WIND_SPEED = 2, WIND_DIRECTION = 3, TEMPERATURE = 4, HUMIDITY = 5;
+	private final float[] data = new float[6];
 	
 	public DataPoint(String line){
 		String[] values = line.trim().split("\\s+");
@@ -38,14 +37,13 @@ public class DataPoint implements Comparable<DataPoint>{
 		
 		this.date = new GregorianCalendar(year, month, day, time, 0);
 		
-		air_pressure =	 Float.parseFloat(values[AIR_PRESSURE_INDEX]);
-		wind_speed =	 Float.parseFloat(values[WIND_SPEED_INDEX]);
-		wind_direction = Float.parseFloat(values[WIND_DIRECTION_INDEX]);
-		temperature =	 Float.parseFloat(values[TEMP_INDEX]);
-		float rain =	 Float.parseFloat(values[RAIN_INDEX]);
-		humidity =		 Float.parseFloat(values[HUMITIDY_INDEX]);
-		
-		this.rain = rain==-1.0f ? 0.0f : rain;
+		data[AIR_PRESSURE] =	Float.parseFloat(values[AIR_PRESSURE_INDEX]);
+		data[WIND_SPEED] =		Float.parseFloat(values[WIND_SPEED_INDEX]);
+		data[WIND_DIRECTION] =	Float.parseFloat(values[WIND_DIRECTION_INDEX]);
+		data[TEMPERATURE] =		Float.parseFloat(values[TEMP_INDEX]);
+		data[RAIN] =			Float.parseFloat(values[RAIN_INDEX]);
+		if (data[RAIN]==-1.0f) data[RAIN] = 0.0f;
+		data[HUMIDITY] =		Float.parseFloat(values[HUMITIDY_INDEX]);
 	}
 	
 	/**
@@ -53,15 +51,19 @@ public class DataPoint implements Comparable<DataPoint>{
 	 * @param date
 	 */
 	public DataPoint(GregorianCalendar date){
-		air_pressure = MISSING_VALUE;
-		wind_speed = MISSING_VALUE;
-		wind_direction = MISSING_VALUE;
-		temperature = MISSING_VALUE;
-		rain = MISSING_VALUE;
-		humidity = MISSING_VALUE;
-		
+		for (int i=0; i<data.length; i++){
+			data[i] = ERROR_VALUE;
+		}
 		this.date = date;
 		hashCode = -1;
+	}
+	
+	public float get(int value){
+		return data[value];
+	}
+	
+	public long getTime(){
+		return date.getTimeInMillis();
 	}
 	
 	public int getMonth(){
@@ -89,8 +91,8 @@ public class DataPoint implements Comparable<DataPoint>{
 		return date.compareTo(dp.date);
 	}
 	
-	public static boolean isValid(float value){
-		return value!=ERROR_VALUE && value!=MISSING_VALUE;
+	public boolean isValid(int value){
+		return data[value]!=ERROR_VALUE && data[value]!=MISSING_VALUE;
 	}
 	
 	public String toString(){

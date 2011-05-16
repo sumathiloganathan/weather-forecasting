@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.SortedSet;
 
 import org.encog.ml.data.MLDataPair;
@@ -99,6 +100,10 @@ public class Main {
 				WeatherData.Value.HUMIDITY});
 		
 		System.out.println("summer data 2 cleaned: "+summer2.size()+" obtained in:"+(System.currentTimeMillis()-start));
+		
+		SimpleAdjuster adjuster = new SimpleAdjuster(summer2);
+		List<MLDataPair> trainingData = adjuster.makeTraningData(summer2);
+		System.out.println("training data size:"+trainingData.size());
 	}
 	
 	/**
