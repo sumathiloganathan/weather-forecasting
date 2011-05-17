@@ -13,16 +13,14 @@ import org.encog.ml.data.basic.BasicMLDataPair;
 
 
 public class DataParser {
-	
-	public static final double MISSING_VALUE = -999.0, ERROR_VALUE = -998.0;
-	
-	/**
-	 * Indexes in returned data arrays for different data.
-	 */
-	public static final int 
-		AIR_PRESSURE = 0, WIND_SPEED = 1,
-		WIND_DIRECTION = 2, TEMPERATURE = 3,
-		RAIN = 4, HUMIDITY = 5;
+	//indexes of different values in each row in the data file
+	private static final int
+		AIR_PRESSURE_INDEX = 28,
+		WIND_SPEED_INDEX = 14,
+		WIND_DIRECTION_INDEX = 11,
+		TEMP_INDEX = 38,
+		RAIN_INDEX = 30,
+		HUMITIDY_INDEX = 45;
 	
 	private static int[] VALUES_INDEXES = {28,14,11,38,30,45};//unless this is different between files we can have a static value
 	
@@ -57,7 +55,7 @@ public class DataParser {
 			s = new BufferedReader(new FileReader(f));
 			
 			while ((line=s.readLine())!=null){
-				data.add(new DataPoint(line));
+				data.add(new DataPoint(getDate(line), splitLine(line)));
 			}
 		}
 		finally{
@@ -66,6 +64,30 @@ public class DataParser {
 		}
 		
 		return new WeatherData(data);
+	}
+	
+	private static int[] getDate(String line) {
+		String[] values = line.trim().split("\\s+");
+		
+		int date = Integer.parseInt(values[0]);
+		int time = Integer.parseInt(values[1]);
+		
+		return new int[]{date, time};
+	}
+	
+	private static float[] splitLine(String line) {
+		String[] values = line.trim().split("\\s+");
+		float[] data = new float[6];
+		
+		data[DataPoint.AIR_PRESSURE] =	Float.parseFloat(values[AIR_PRESSURE_INDEX]);
+		data[DataPoint.WIND_SPEED] =		Float.parseFloat(values[WIND_SPEED_INDEX]);
+		data[DataPoint.WIND_DIRECTION] =	Float.parseFloat(values[WIND_DIRECTION_INDEX]);
+		data[DataPoint.TEMPERATURE] =		Float.parseFloat(values[TEMP_INDEX]);
+		data[DataPoint.RAIN] =			Float.parseFloat(values[RAIN_INDEX]);
+		if (data[DataPoint.RAIN]==-1.0f) data[DataPoint.RAIN] = 0.0f;
+		data[DataPoint.HUMIDITY] =		Float.parseFloat(values[HUMITIDY_INDEX]);
+		
+		return data;
 	}
 	
 	/**
@@ -98,12 +120,12 @@ public class DataParser {
 				//obtain data elements we are interested in
 				for (int i=0 ; i<VALUES_INDEXES.length ; i++){
 					double v = Double.parseDouble(values[VALUES_INDEXES[i]]);
-					if (skipBadData && (v==MISSING_VALUE || v==ERROR_VALUE)){
+					if (skipBadData && (v==DataPoint.MISSING_VALUE || v==DataPoint.ERROR_VALUE)){
 						good = false;
 						break;
 					}
 					else{
-						if (i == RAIN && v < 0.0){
+						if (i == DataPoint.RAIN && v < 0.0){
 							post[i] = 0.0;
 						}
 						else{
@@ -114,9 +136,9 @@ public class DataParser {
 				
 				if (good){
 					
-					if (post[WIND_DIRECTION]==0.0){//if this is 0 there is no wind, make direction random
+					if (post[DataPoint.WIND_DIRECTION]==0.0){//if this is 0 there is no wind, make direction random
 						//post[WIND_DIRECTION] = Math.random()*360;
-						post[WIND_DIRECTION] = dataList.getLast()[WIND_DIRECTION];
+						post[DataPoint.WIND_DIRECTION] = dataList.getLast()[DataPoint.WIND_DIRECTION];
 						
 					}
 					
@@ -208,7 +230,7 @@ public class DataParser {
 			//if input is data point i the ideal output should be RAIN in data point i+1
 			retList.add(new BasicMLDataPair(
 					new BasicMLData(da.adjustInput(data[i-1])),
-					new BasicMLData(new double[]{da.adjustOutput(data[i][RAIN])})));
+					new BasicMLData(new double[]{da.adjustOutput(data[i][DataPoint.RAIN])})));
 		}
 		
 		return retList;

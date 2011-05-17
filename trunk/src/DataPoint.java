@@ -6,26 +6,18 @@ public class DataPoint implements Comparable<DataPoint>{
 	
 	public final static float MISSING_VALUE = -999.0f, ERROR_VALUE = -998.0f;
 	
-	//indexes of different values in each row in the data file
-	private static final int
-		AIR_PRESSURE_INDEX = 28,
-		WIND_SPEED_INDEX = 14,
-		WIND_DIRECTION_INDEX = 11,
-		TEMP_INDEX = 38,
-		RAIN_INDEX = 30,
-		HUMITIDY_INDEX = 45;
-	
 	private final int hashCode;
 	private final GregorianCalendar date;
-	
+
+	/**
+	 * Indexes in returned data arrays for different data.
+	 */
 	public static final int RAIN = 0, AIR_PRESSURE = 1, WIND_SPEED = 2, WIND_DIRECTION = 3, TEMPERATURE = 4, HUMIDITY = 5;
-	private final float[] data = new float[6];
+	private float[] data = new float[6];
 	
-	public DataPoint(String line){
-		String[] values = line.trim().split("\\s+");
-		
-		int date = Integer.parseInt(values[0]);
-		int time = Integer.parseInt(values[1]);
+	public DataPoint(int[] dateTime, float[] weatherValues){
+		int date = dateTime[0];
+		int time = dateTime[1];
 		
 		hashCode = date*100+time;
 		
@@ -37,13 +29,7 @@ public class DataPoint implements Comparable<DataPoint>{
 		
 		this.date = new GregorianCalendar(year, month, day, time, 0);
 		
-		data[AIR_PRESSURE] =	Float.parseFloat(values[AIR_PRESSURE_INDEX]);
-		data[WIND_SPEED] =		Float.parseFloat(values[WIND_SPEED_INDEX]);
-		data[WIND_DIRECTION] =	Float.parseFloat(values[WIND_DIRECTION_INDEX]);
-		data[TEMPERATURE] =		Float.parseFloat(values[TEMP_INDEX]);
-		data[RAIN] =			Float.parseFloat(values[RAIN_INDEX]);
-		if (data[RAIN]==-1.0f) data[RAIN] = 0.0f;
-		data[HUMIDITY] =		Float.parseFloat(values[HUMITIDY_INDEX]);
+		data = weatherValues;
 	}
 	
 	/**
