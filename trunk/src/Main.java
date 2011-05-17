@@ -46,7 +46,7 @@ public class Main {
 				WeatherData.Value.TEMPERATURE,
 				WeatherData.Value.HUMIDITY});
 		
-		System.out.println("summer data 2 cleaned: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
+		System.out.println("summer data cleaned: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
 		
 		SimpleAdjuster adjuster = new SimpleAdjuster(summer);
 		List<MLDataPair> trainingData = adjuster.makeTraningData(summer);
@@ -59,7 +59,7 @@ public class Main {
 		System.gc();
 		
 		MLDataSet train = new BasicMLDataSet(trainingData);
-		NeuralNetwork nn = new NeuralNetwork(5, 1, findGoodLayer(train));
+		NeuralNetwork nn = new NeuralNetwork(SimpleAdjuster.NUMBER_OF_INPUT, 1, findGoodLayer(train));
 		
 		System.out.print("training");
 		nn.train(train, 1000);
@@ -95,7 +95,7 @@ public class Main {
 		double bestError = Double.NEGATIVE_INFINITY;
 		int[] bestLayer = new int[0];
 		
-		for (int nLay = 1; nLay<5; nLay++){//try between 1 and 5 hidden layers
+		for (int nLay = 1; nLay<=3; nLay++){//try between 1 and 5 hidden layers
 			
 			int[] layer = new int[nLay];
 			

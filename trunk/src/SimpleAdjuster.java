@@ -15,6 +15,8 @@ import org.encog.ml.data.basic.BasicMLDataPair;
  */
 public class SimpleAdjuster implements DataAdjuster{
 	
+	public static final int NUMBER_OF_INPUT = 5;
+	
 	private final int TEMP = 0, HUMI = 1, WIND = 2, RAIN = 3;
 
 	private final double[] min = new double[4];
@@ -92,7 +94,7 @@ public class SimpleAdjuster implements DataAdjuster{
 	
 	@Override
 	public double[] asInput(DataPoint dp) {
-		double[] ret = new double[5];
+		double[] ret = new double[NUMBER_OF_INPUT];
 		
 		ret[0] = normalize(dp, DataPoint.HUMIDITY, HUMI);
 		ret[1] = normalize(dp, DataPoint.TEMPERATURE, TEMP);
