@@ -54,7 +54,7 @@ public class NeuralNetwork {
 				System.out.println("\tstopped after:"+i+" ");
 				return train.getError();
 			}*/
-			if (print >= 100){
+			if (print >= 500){
 				System.out.print(".");
 				print = 0;
 			}

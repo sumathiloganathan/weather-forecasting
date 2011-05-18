@@ -44,13 +44,20 @@ public class Main {
 				WeatherData.Value.WIND_SPEED,
 				WeatherData.Value.WIND_DIRECTION,
 				WeatherData.Value.TEMPERATURE,
-				WeatherData.Value.HUMIDITY});
+				WeatherData.Value.HUMIDITY,
+				WeatherData.Value.RAIN});
 		
 		System.out.println("summer data cleaned: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
 		
 		SimpleAdjuster adjuster = new SimpleAdjuster(summer);
 		List<MLDataPair> trainingData = adjuster.makeTraningData(summer);
-		System.out.println("training data size:"+trainingData.size());
+		
+		//Cut out 10 % of the training set for validation
+		List<MLDataPair> validationData = trainingData.subList( (int) (0.6 * trainingData.size()), trainingData.size());
+		
+		List<MLDataPair> trainDataNew = trainingData.subList(0, (int) (0.6 * trainingData.size() - 1));
+		
+		System.out.println("training data size:"+trainDataNew.size());
 		
 		//do some clean up before we start some heavy training
 		summer=null;
@@ -58,15 +65,19 @@ public class Main {
 		adjuster = null;
 		System.gc();
 		
+
 		MLDataSet train = new BasicMLDataSet(trainingData);
-		NeuralNetwork nn = new NeuralNetwork(SimpleAdjuster.NUMBER_OF_INPUT, 1, findGoodLayer(train));
+		NeuralNetwork nn = new NeuralNetwork(SimpleAdjuster.NUMBER_OF_INPUT, 1, new int[] {15, 6});
+
 		
 		System.out.print("training");
-		nn.train(train, 1000);
+		
+		//train on all the training data
+		nn.train(train, trainDataNew.size());
 		System.out.println();
 		
 		Iterator<MLDataPair> it = trainingData.iterator();
-		
+		/*
 		//try the network some
 		for (int i=0; i<10; i++){
 			MLDataPair mldp = it.next();
@@ -77,6 +88,34 @@ public class Main {
 			double r = nn.predictRain(mldp.getInputArray());
 			System.out.println("in:"+toString(mldp.getInputArray())+" out:"+r+" ideal:"+toString(mldp.getIdeal().getData()));
 		}
+		*/
+		float correct = 0.0f;
+		float correctLow = 0.0f;
+		float wrong = 0.0f;
+		float wrongLow = 0.0f;
+		//loop through the validation set and check accuracy
+		for (MLDataPair mldp : validationData) {
+			double r = nn.predictRain(mldp.getInputArray());
+			double compare = mldp.getIdeal().getData()[0];
+			if ((compare == 1.0f && r > 0.5f)) {
+				correct++;
+			}
+			else if ((compare == 0.0f && r <= 0.5f)) {
+				correctLow++;
+			}
+			else if ((compare == 0.0f && r > 0.5f)){
+				wrongLow++;
+			}
+			else {
+				wrong++;
+			}
+			System.out.println(/* "in:"+toString(mldp.getInputArray())+*/"out:"+r+" ideal:"+toString(mldp.getIdeal().getData()));
+		}
+		
+		System.out.println("correct: " + (correct + correctLow) + "\n" + "wrong: " + (wrong + wrongLow));
+		System.out.println("accuracy: " + ((correct + correctLow) / (correct + correctLow + wrong + wrongLow)));
+		System.out.println("accuracyLow : " + (correctLow / (correctLow + wrongLow)));
+		System.out.println("accuracyHigh: " + (correct / (correct + wrong)));
 	}
 	
 	public static String toString(double[] a){
