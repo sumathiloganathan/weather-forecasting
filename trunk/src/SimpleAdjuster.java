@@ -49,21 +49,10 @@ public class SimpleAdjuster implements DataAdjuster{
 	
 	
 	
-	@Override
-	public double[] adjustInput(double[] input) {
-		return null;
-	}
-
-	@Override
-	public double adjustOutput(double d) {
-		return 0.0;
-	}
-	
-	
 	
 	private MLDataPair makePair(DataPoint curr, DataPoint next){
 		if (next.isValid(DataPoint.RAIN) && (next.getTime()-curr.getTime()) < 21600001){//6 hours in milliseconds 6*60*60*1000
-			return new BasicMLDataPair(new BasicMLData(asInput(curr)),new BasicMLData(new double[]{asOutput(next)}));
+			return new BasicMLDataPair(new BasicMLData(asInput(curr)),new BasicMLData(new double[]{normalize(next, DataPoint.RAIN, RAIN)}));
 		}
 		return null;
 	}
@@ -92,8 +81,7 @@ public class SimpleAdjuster implements DataAdjuster{
 		return (dp.get(dpIndex)-min[i])/(max[i]-min[i]);
 	}
 	
-	@Override
-	public double[] asInput(DataPoint dp) {
+	private double[] asInput(DataPoint dp) {
 		double[] ret = new double[NUMBER_OF_INPUT];
 		
 		ret[0] = normalize(dp, DataPoint.HUMIDITY, HUMI);
@@ -114,7 +102,12 @@ public class SimpleAdjuster implements DataAdjuster{
 	}
 	
 	@Override
-	public double asOutput(DataPoint dp) {
-		return (dp.get(DataPoint.RAIN)-min[RAIN])/(max[RAIN]-min[RAIN]);
+	public double adjustOutput(MLDataPair dp) {
+		return dp.getIdealArray()[0]*max[RAIN]+min[RAIN];
+	}
+
+	@Override
+	public int numberOfInputs() {
+		return NUMBER_OF_INPUT;
 	}
 }

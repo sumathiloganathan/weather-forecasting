@@ -12,7 +12,7 @@ import org.encog.ml.data.basic.BasicMLDataPair;
 
 /**
  * A simple data adjuster that normalizes all the input. And splits the wind direction value into two values, 
- * the amount of east and north.
+ * the amount of east and north. And inputs the months divided by 13.
  */
 public class SimpleAdjusterWithTime implements DataAdjuster{
 	
@@ -48,23 +48,9 @@ public class SimpleAdjusterWithTime implements DataAdjuster{
 		}
 	}
 	
-	
-	
-	@Override
-	public double[] adjustInput(double[] input) {
-		return null;
-	}
-
-	@Override
-	public double adjustOutput(double d) {
-		return 0.0;
-	}
-	
-	
-	
 	private MLDataPair makePair(DataPoint curr, DataPoint next){
 		if (next.isValid(DataPoint.RAIN) && (next.getTime()-curr.getTime()) < 21600001){//6 hours in milliseconds 6*60*60*1000
-			return new BasicMLDataPair(new BasicMLData(asInput(curr)),new BasicMLData(new double[]{asOutput(next)}));
+			return new BasicMLDataPair(new BasicMLData(asInput(curr)),new BasicMLData(new double[]{normalize(next, DataPoint.RAIN, RAIN)}));
 		}
 		return null;
 	}
@@ -113,8 +99,7 @@ public class SimpleAdjusterWithTime implements DataAdjuster{
 		return (dp.get(dpIndex)-min[i])/(max[i]-min[i]);
 	}
 	
-	@Override
-	public double[] asInput(DataPoint dp) {
+	private double[] asInput(DataPoint dp) {
 		double[] ret = new double[NUMBER_OF_INPUT];
 		
 		ret[0] = normalize(dp, DataPoint.HUMIDITY, HUMI);
@@ -135,7 +120,12 @@ public class SimpleAdjusterWithTime implements DataAdjuster{
 	}
 	
 	@Override
-	public double asOutput(DataPoint dp) {
-		return Math.min(((dp.get(DataPoint.RAIN)-min[RAIN])/(max[RAIN]-min[RAIN]))*2, 0.99);
+	public double adjustOutput(MLDataPair dp) {
+		return dp.getIdealArray()[0]*max[RAIN]+min[RAIN];
+	}
+
+	@Override
+	public int numberOfInputs() {
+		return NUMBER_OF_INPUT;
 	}
 }

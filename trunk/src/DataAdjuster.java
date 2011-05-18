@@ -9,20 +9,22 @@ import org.encog.ml.data.MLDataPair;
  */
 public interface DataAdjuster {
 	/**
-	 * Adjusts the given inputs.
-	 * @param input
+	 * Given an adjusted data pair returns the original value of the output, before it was adjusted by this data adjuster.
+	 * @param mldp
 	 * @return
 	 */
-	public double[] adjustInput(double[] input);
+	public double adjustOutput(MLDataPair mldp);
+	
 	/**
-	 * 
-	 * @param d
+	 * The number of inputs a neural networks needs to have to be able to receive data from this adjuster.
 	 * @return
 	 */
-	public double adjustOutput(double d);
+	public int numberOfInputs();
 	
-	public double[] asInput(DataPoint dp);
-	public double asOutput(DataPoint dp);
-	
+	/**
+	 * Given a set of DataPoints returns it as training data for a neural network.
+	 * @param data
+	 * @return
+	 */
 	public List<MLDataPair> makeTraningData(SortedSet<DataPoint> data);
 }

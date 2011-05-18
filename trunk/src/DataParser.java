@@ -229,9 +229,9 @@ public class DataParser {
 		
 		for (int i=1; i<data.length; i++){
 			//if input is data point i the ideal output should be RAIN in data point i+1
-			retList.add(new BasicMLDataPair(
-					new BasicMLData(da.adjustInput(data[i-1])),
-					new BasicMLData(new double[]{da.adjustOutput(data[i][DataPoint.RAIN])})));
+			//retList.add(new BasicMLDataPair(
+			//		new BasicMLData(da.adjustInput(data[i-1])),
+			//		new BasicMLData(new double[]{da.adjustOutput(data[i][DataPoint.RAIN])})));
 		}
 		
 		return retList;
