@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.SortedSet;
 
 import org.encog.ml.data.MLDataPair;
-import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 
 public class Main {
@@ -37,8 +37,8 @@ public class Main {
 		
 		System.out.println("good summer data: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
 		
-		SimpleAdjuster adjuster = new SimpleAdjuster(summer);
-		List<MLDataPair> trainingData = adjuster.makeTraningData(summer);
+		DataAdjuster adjuster = new SimpleAdjuster(summer);
+		List<MLDataPair> trainingData = new ArrayList<MLDataPair>(adjuster.makeTraningData(summer));
 		
 		//Cut out 40 % of the training set for validation
 		List<MLDataPair> validationData = trainingData.subList( (int) (0.6 * trainingData.size()), trainingData.size());
@@ -48,14 +48,14 @@ public class Main {
 		System.out.println("training data size:"+trainDataNew.size());
 		System.out.println("validation data size:"+validationData.size());
 		
+		BasicMLDataSet train = new BasicMLDataSet(trainingData);
+		NeuralNetwork nn = new NeuralNetwork(adjuster.numberOfInputs(), 1, findGoodLayer(train, validationData));
+		
 		//do some clean up before we start some heavy training
-		summer=null;
+		summer = null;
 		wd = null;
 		adjuster = null;
 		System.gc();
-		
-		MLDataSet train = new BasicMLDataSet(trainingData);
-		NeuralNetwork nn = new NeuralNetwork(SimpleAdjuster.NUMBER_OF_INPUT, 1, new int[] {15, 6});
 		
 		System.out.print("training");
 		
@@ -85,7 +85,7 @@ public class Main {
 			else {
 				wrong++;
 			}
-			System.out.println("out:"+r+" ideal:"+toString(mldp.getIdeal().getData()));
+			//System.out.println("out:"+r+" ideal:"+toString(mldp.getIdeal().getData()));
 		}
 		
 		System.out.println("correct: " + (correct + correctLow) + "\n" + "wrong: " + (wrong + wrongLow));
@@ -107,18 +107,51 @@ public class Main {
 	}
 	
 	/**
+	 * Trains a network a little bit, then validates it on just a few data points to see if the network setup is any good.
+	 * @param nn
+	 * @param trainData
+	 * @param validData
+	 * @return The amount a accuracy for rain prediction when the network was trained a little bit.
+	 */
+	public static float findAccHigh(NeuralNetwork nn, BasicMLDataSet trainData, List<MLDataPair> validData){
+		
+		nn.train(trainData, 500);
+		
+		float correct = 0.0f;
+		float total = 0.0f;
+		//loop through the validation set and check accuracy
+		int i=0;
+		for (MLDataPair mldp : validData) {
+			double r = nn.predictRain(mldp.getInputArray());
+			double compare = mldp.getIdeal().getData()[0];
+			
+			if (compare == 1.0f){
+				if (r > 0.5f) {
+					correct++;
+				}
+				total++;
+			}
+			i++;
+			if (i>50)
+				break;
+		}
+		return correct/total;
+		
+	}
+	
+	/**
 	 * Will try a bunch of different layers setup and train them and compare the error to find the best layers.
 	 * @param trainData the data to train on.
 	 */
-	static int[] findGoodLayer(MLDataSet trainData){
-		double bestError = Double.NEGATIVE_INFINITY;
+	public static int[] findGoodLayer(BasicMLDataSet trainData, List<MLDataPair> validData){
+		double bestAcc = Double.NEGATIVE_INFINITY;
 		int[] bestLayer = new int[0];
 		
 		for (int nLay = 1; nLay<=3; nLay++){//try between 1 and 5 hidden layers
 			
 			int[] layer = new int[nLay];
 			
-			for (int i=0; i<20; i++){//try 20 different setups with nLay number of layers
+			for (int i=0; i<3; i++){//try 20 different setups with nLay number of layers
 				System.out.print("[");
 				for (int j=0; j<nLay; j++){
 					layer[j] = (int)(Math.random()*15.0)+1;//each layers has between 1 and 7 nodes
@@ -128,19 +161,19 @@ public class Main {
 				
 				//setup a network with those layers and train it 50 times
 				NeuralNetwork nn = new NeuralNetwork(5, 1, layer);
-				double error = nn.train(trainData, 1);
+				double acc = findAccHigh(nn, trainData, validData);
 				
-				System.out.println("\terror:"+error);
+				System.out.println("\taccuracy:"+acc);
 				
 				//see if its better then our current best
-				if (error > bestError){
-					bestError = error;
+				if (acc > bestAcc){
+					bestAcc = acc;
 					bestLayer = Arrays.copyOf(layer, layer.length);
 				}
 			}
 		}
 		
-		System.out.println("best error:"+bestError);
+		System.out.println("best accuracy:"+bestAcc);
 		System.out.print("[");
 		for (int i: bestLayer){
 			System.out.print(","+i);
