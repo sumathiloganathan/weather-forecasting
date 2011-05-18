@@ -1,5 +1,3 @@
-import org.encog.engine.network.activation.ActivationGaussian;
-import org.encog.ml.BasicML;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.train.MLTrain;
 import org.encog.neural.networks.BasicNetwork;
