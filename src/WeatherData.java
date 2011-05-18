@@ -168,7 +168,7 @@ public class WeatherData {
 	}
 	
 	public String info(){
-		return "total:"+allData.size()+"\nrain:"+rainData.size()+"\nair"+airPressureData.size()+"\nwind speed:"+windSpeedData.size()
+		return "total:"+allData.size()+"\nrain:"+rainData.size()+"\nair:"+airPressureData.size()+"\nwind speed:"+windSpeedData.size()
 		+"\nwind diection"+windDirectionData.size()+"\ntemp:"+temperatureData.size()+"\nhumidity:"+humidityData.size();
 	}
 	

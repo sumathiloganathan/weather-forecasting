@@ -52,6 +52,14 @@ public class DataPoint implements Comparable<DataPoint>{
 		return date.getTimeInMillis();
 	}
 	
+	public int getHour(){
+		return date.get(Calendar.HOUR_OF_DAY);
+	}
+	
+	public int getDay(){
+		return date.get(Calendar.DAY_OF_MONTH);
+	}
+	
 	public int getMonth(){
 		return date.get(Calendar.MONTH);
 	}
