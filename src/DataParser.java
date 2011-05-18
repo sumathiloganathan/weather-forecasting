@@ -85,6 +85,7 @@ public class DataParser {
 		data[DataPoint.TEMPERATURE] =		Float.parseFloat(values[TEMP_INDEX]);
 		data[DataPoint.RAIN] =			Float.parseFloat(values[RAIN_INDEX]);
 		if (data[DataPoint.RAIN]==-1.0f) data[DataPoint.RAIN] = 0.0f;
+		else if (data[DataPoint.RAIN] > 0) {data[DataPoint.RAIN] = 1.0f;}
 		data[DataPoint.HUMIDITY] =		Float.parseFloat(values[HUMITIDY_INDEX]);
 		
 		return data;

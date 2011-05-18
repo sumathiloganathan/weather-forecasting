@@ -15,7 +15,7 @@ import org.encog.ml.data.basic.BasicMLDataPair;
  */
 public class SimpleAdjuster implements DataAdjuster{
 	
-	public static final int NUMBER_OF_INPUT = 5;
+	public static final int NUMBER_OF_INPUT = 6;
 	
 	private final int TEMP = 0, HUMI = 1, WIND = 2, RAIN = 3;
 
@@ -109,6 +109,7 @@ public class SimpleAdjuster implements DataAdjuster{
 		else{
 			ret[4] = 1.0-((dp.get(DataPoint.WIND_DIRECTION)-90)/270);
 		}
+		ret[5]  = normalize(dp, DataPoint.RAIN, RAIN);
 		return ret;
 	}
 	
