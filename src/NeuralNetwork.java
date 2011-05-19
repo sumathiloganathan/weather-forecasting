@@ -45,31 +45,16 @@ public class NeuralNetwork {
 		final MLTrain train = new ResilientPropagation(network, data);
 		
 		System.out.println();
-		System.out.print("|");
-		int lastP = 0;
+		times /= 500;
+		long start = System.currentTimeMillis();
 		for (int i=0; i<times; i++){
-			train.iteration();
-			//System.out.println(""+i+": "+train.getError());
-			/*if (train.getError() < 0.0001){
-				System.out.println("\tstopped after:"+i+" ");
-				return train.getError();
-			}*/
-			int permille = (int)(((double)i/times) * 1000);
-			if (permille > lastP) {
-				lastP = permille;
-				if (permille % 100 == 0) {
-					System.out.print("|");
-				}
-				else if (permille % 50 == 0) {
-					System.out.print(":");
-				}
-				else if (permille % 10 == 0) {
-					System.out.print(".");
-				}
-			}
+			train.iteration(500);
+			System.out.print(".");
 		}
-		System.out.println("|");
 		train.finishTraining();
+		
+		System.out.println("\ntime trained:"+((System.currentTimeMillis()-start)/1000.0));
+		
 		return train.getError();
 	}
 	
