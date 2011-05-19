@@ -44,19 +44,32 @@ public class NeuralNetwork {
 	public double train(MLDataSet data, int times){
 		final MLTrain train = new ResilientPropagation(network, data);
 		
-		int print = 0;
-		for (int i=0; i<times; i++, print++){
+		System.out.println();
+		System.out.print("|");
+		int lastP = 0;
+		for (int i=0; i<times; i++){
 			train.iteration();
 			//System.out.println(""+i+": "+train.getError());
 			/*if (train.getError() < 0.0001){
 				System.out.println("\tstopped after:"+i+" ");
 				return train.getError();
 			}*/
-			if (print >= 500){
-				System.out.print(".");
-				print = 0;
+			int permille = (int)(((double)i/times) * 1000);
+			if (permille > lastP) {
+				lastP = permille;
+				if (permille % 100 == 0) {
+					System.out.print("|");
+				}
+				else if (permille % 50 == 0) {
+					System.out.print(":");
+				}
+				else if (permille % 10 == 0) {
+					System.out.print(".");
+				}
 			}
 		}
+		System.out.println("|");
+		train.finishTraining();
 		return train.getError();
 	}
 	

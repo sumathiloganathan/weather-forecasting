@@ -17,10 +17,10 @@ public class SimpleAdjuster implements DataAdjuster{
 	
 	public static final int NUMBER_OF_INPUT = 6;
 	
-	private final int TEMP = 0, HUMI = 1, WIND = 2, RAIN = 3;
+	public final int TEMP = 0, HUMI = 1, WIND = 2, RAIN = 3;
 
-	private final double[] min = new double[4];
-	private final double[] max = new double[4];
+	public final double[] min = new double[4];
+	public final double[] max = new double[4];
 	
 	private double min(DataPoint dp, int thisIndex, int thatIndex){
 		return dp.isValid(thatIndex) ? Math.min(dp.get(thatIndex), min[thisIndex]) : min[thisIndex];
