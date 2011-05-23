@@ -33,7 +33,7 @@ public class Main {
 		do {
 			train.iteration();
 			epoch++;
-		} while (epoch < 1000 && (train.getError() > 0.01));
+		} while (epoch < 5000 && (train.getError() > 0.01));
 		train.finishTraining();
 		System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 

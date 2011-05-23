@@ -11,13 +11,19 @@ public class ClampActivation implements ActivationFunction{
 	@Override
 	public void activationFunction(final double[] x, final int start, final int size) {
 		for (int i = start; i < start + size; i++) {
-            if (x[i] < 0) x[i] = 0;
+            if (x[i] < 0.0) x[i] = 0.0;
+            else if(x[i] < 0.5) x[i] = x[i]*x[i];
 		}
 	}
 
 	@Override
 	public double derivativeFunction(double arg0) {
-		return arg0 < 0 ? 0.0 :1.0;
+		if (arg0<0.0)
+			return 0.0;
+		if (arg0<0.5)
+			return 2*arg0;
+		else
+			return 1.0;
 	}
 
 	@Override

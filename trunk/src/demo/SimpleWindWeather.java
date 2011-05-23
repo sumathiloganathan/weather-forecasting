@@ -55,7 +55,7 @@ public class SimpleWindWeather extends Weather{
 	public BasicNetwork getGoodNetwork() {
 		final BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(new ActivationLinear(),false,6));
-		network.addLayer(new BasicLayer(new ClampActivation(),false,4));//new ActivationRamp(1.0, 0.0, 1.0, 0.0) ,false,4));
+		network.addLayer(new BasicLayer(new ClampActivation(), false, 4));//new ActivationRamp(1.0, 0.0, 1.0, 0.0) ,false,4));
 		network.addLayer(new BasicLayer(new ActivationLinear(),false,1));
 		network.getStructure().finalizeStructure();
 		network.reset();
