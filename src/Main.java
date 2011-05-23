@@ -8,90 +8,48 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.encog.engine.network.activation.ActivationLinear;
+import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.basic.BasicMLDataSet;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.Train;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+
+import demo.SimpleWeather;
+import demo.SimpleWindWeather;
+import demo.Weather;
 
 public class Main {
 	
 	public static void main(String[] args) throws IOException{
+		Weather weather = new SimpleWindWeather();
+		BasicNetwork network = weather.getGoodNetwork();
+		final Train train = new ResilientPropagation(network, weather);//does not work well with non linear stuff?
+		
+		int epoch = 1;
+		
+		do {
+			train.iteration();
+			epoch++;
+		} while (epoch < 1000 && (train.getError() > 0.01));
+		train.finishTraining();
+		System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 
-		// This creates a new WeatherData and print some nice information about it
-		long start = System.currentTimeMillis();
-		WeatherData wd = DataParser.parse("SMHI_3hours_clim_7142.txt");
-		System.out.println("parsed in:"+(System.currentTimeMillis()-start));
+		System.out.println(network.dumpWeights());
 		
-		System.out.println(wd.info());
-		System.out.println();
-		
-		start = System.currentTimeMillis();
-		SortedSet<DataPoint> summer = wd.getDataBetweenMonths(Calendar.MAY, Calendar.AUGUST);
-		System.out.println("total summer data: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
-		
-		start = System.currentTimeMillis();
-		wd.purgeData(summer, new WeatherData.Value[]{
-				WeatherData.Value.WIND_SPEED,
-				WeatherData.Value.WIND_DIRECTION,
-				WeatherData.Value.TEMPERATURE,
-				WeatherData.Value.HUMIDITY,
-				WeatherData.Value.RAIN});
-		
-		System.out.println("good summer data: "+summer.size()+" obtained in:"+(System.currentTimeMillis()-start));
-		
-		DataAdjuster adjuster = new SimpleAdjuster(summer);
-		List<MLDataPair> trainingData = new ArrayList<MLDataPair>(adjuster.makeTraningData(summer));
-		
-		//Cut out 40 % of the training set for validation
-		List<MLDataPair> validationData = trainingData.subList( (int) (0.6 * trainingData.size()), trainingData.size());
-		List<MLDataPair> trainDataNew = trainingData.subList(0, (int) (0.6 * trainingData.size() - 1));
-		
-		System.out.println("data pairs:"+trainingData.size());
-		System.out.println("training data size:"+trainDataNew.size());
-		System.out.println("validation data size:"+validationData.size());
-		
-		BasicMLDataSet train = new BasicMLDataSet(trainingData);
-		NeuralNetwork nn = new NeuralNetwork(adjuster.numberOfInputs(), 1, findGoodLayer(train, validationData));
-		
-		//do some clean up before we start some heavy training
-		summer = null;
-		wd = null;
-		adjuster = null;
-		System.gc();
-		
-		System.out.print("training");
-		
-		//train on all the training data
-		nn.train(train, trainDataNew.size());
-		System.out.println();
-		
-		
-		float correct = 0.0f;
-		float correctLow = 0.0f;
-		float wrong = 0.0f;
-		float wrongLow = 0.0f;
-		//loop through the validation set and check accuracy
-		for (MLDataPair mldp : validationData) {
-			double r = nn.predictRain(mldp.getInputArray());
-			double compare = mldp.getIdeal().getData()[0];
-			
-			if ((compare == 1.0f && r > 0.5f)) {
-				correct++;
-			}
-			else if ((compare == 0.0f && r <= 0.5f)) {
-				correctLow++;
-			}
-			else if ((compare == 0.0f && r > 0.5f)){
-				wrongLow++;
-			}
-			else {
-				wrong++;
-			}
-			//System.out.println("out:"+r+" ideal:"+toString(mldp.getIdeal().getData()));
+		// test the neural network
+		System.out.println("Neural Network Results:");
+
+		Iterator<MLDataPair> it = weather.iterator();
+		for (int i=0; i<10; i++){
+			MLDataPair pair = it.next();
+			final MLData output = network.compute(pair.getInput());
+			System.out.println(toString(pair.getInputArray())+"\n\tactual = "
+					+ output.getData(0) + "\n\tideal  = "
+					+ pair.getIdeal().getData(0));
 		}
-		
-		System.out.println("correct: " + (correct + correctLow) + "\n" + "wrong: " + (wrong + wrongLow));
-		System.out.println("accuracy: " + ((correct + correctLow) / (correct + correctLow + wrong + wrongLow)));
-		System.out.println("accuracyLow : " + (correctLow / (correctLow + wrongLow)));
-		System.out.println("accuracyHigh: " + (correct / (correct + wrong)));
 	}
 	
 	private static String dateToString(DataPoint dp){
